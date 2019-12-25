@@ -31,6 +31,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "tslib": "~1.9.3",
-    "commander":"^2.20.0"
+    "commander": "^2.20.0",
+    "htmlparser2": "^4.0.0"
   }
 }

@@ -32,6 +32,7 @@
   "dependencies": {
     "tslib": "~1.9.3",
     "commander": "^2.20.0",
-    "htmlparser2": "^4.0.0"
+    "htmlparser2": "^4.0.0",
+    "domhandler": "^3.0.0"
   }
 }

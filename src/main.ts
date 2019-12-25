@@ -2,6 +2,8 @@
 import * as fs from 'fs';
 import * as program from "commander";
 import * as parser from 'htmlparser2';
+import { DomHandler, DomHandlerOptions, Node, Element } from "domhandler";
+
 //var program = require('commander');
 
 if(process.argv.length<4){
@@ -20,10 +22,24 @@ let outPath = process.argv[3];
 //   }))
 //   .parse(process.argv);
 
+var traverseDom = (nodes:  Node[], depth:number)=>{
+  let indent = "";
+  for(let i=0; i<depth; i++) indent+="  ";
+  let res = "";
+  nodes.forEach(node=>{
+      
+    if(!(node instanceof Element)) return; //ignore others for now
+    res += indent + node.name+"\n";
+    if(node.children.length)    res+=traverseDom(node.children, depth+1);
+
+    
+  });
+  return res;
+
+}
 
 var correctFiles = (hPath, pPath) => {
   //console.log('Hiiiiii');
-  let uniqueHtml = [];
   //let htmlPath = `C:\\work\\my\\Pug\\html2pugPostprocessor\\test\\inputFiles\\f1.html`;
   {
     let html = fs.readFileSync(hPath, 'utf-8');
@@ -35,29 +51,31 @@ var correctFiles = (hPath, pPath) => {
     //     uniqueHtml.push(i);
     //   }
     // })
-    
-    const psr = new parser.Parser(
-      {
-          onopentag(name, attribs) {
-              if (name === "script" && attribs.type === "text/javascript") {
-                  console.log("JS! Hooray!");
-              }
-          },
-          ontext(text) {
-              console.log("-->", text);
-          },
-          onclosetag(tagname) {
-              if (tagname === "script") {
-                  console.log("That's it?!");
-              }
-          }
-      },
-      { decodeEntities: true }
-  );
-  psr.write(
-      "Xyz <script type='text/javascript'>var foo = '<<bar>>';</ script>"
-  );
-  psr.end();
+    //var dom = parser.parseDOM(html, {xmlMode: true, lowerCaseTags: false});
+    var dom = parser.parseDOM(html, {lowerCaseAttributeNames: false, lowerCaseTags: false});
+    let res = traverseDom(dom, 0);
+  //   const psr = new parser.Parser(
+  //     {
+  //         onopentag(name, attribs) {
+  //             if (name === "script" && attribs.type === "text/javascript") {
+  //                 console.log("JS! Hooray!");
+  //             }
+  //         },
+  //         ontext(text) {
+  //             console.log("-->", text);
+  //         },
+  //         onclosetag(tagname) {
+  //             if (tagname === "script") {
+  //                 console.log("That's it?!");
+  //             }
+  //         }
+  //     },
+  //     { decodeEntities: true }
+  // );
+  // psr.write(
+  //     "Xyz <script type='text/javascript'>var foo = '<<bar>>';</ script>"
+  // );
+  // psr.end();
 
     //let pug = fs.readFileSync(`C:\\work\\my\\Pug\\html2pugPostprocessor\\test\\inputFiles\\f1.pug`, 'utf-8');
     console.log("Finished successfully");

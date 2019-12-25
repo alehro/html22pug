@@ -1,0 +1,47 @@
+<div class="ui-g" style="padding-bottom: 10px">
+    <div class="ui-g-12 ui-table">
+        <p-table [value]="args.products" [responsive]="true">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="table-widtch">Product Code</th>
+                    <th style="width: 80px">Quantity</th>
+                    <th >Extras</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData>
+                <tr style="width: auto !important">
+                    <td>
+                        {{rowData.code || rowData.productCode}}
+                    </td>
+                    <td pEditableColumn>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="rowData.quantity">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{rowData.quantity}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td  (click)="onClickExtras(rowData, rowData.tabType||rowData.productType)">
+                        <span >
+                            <span *ngFor="let generalExtra of rowData.siteGeneralExtras">
+                                <span *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                    {{generalExtra.selectedProductCode.label}}:
+                                    {{generalExtra.quantity}}
+                                </span>
+                            </span>
+                        </span>
+                    </td>
+
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<p-footer>
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="button" pButton icon="fa fa-close" (click)="onDialogCancel()" label="Cancel"></button>
+        <button type="button" pButton icon="fa fa-check" (click)="onDialogOk()" label="Save"></button>
+    </div>
+</p-footer>

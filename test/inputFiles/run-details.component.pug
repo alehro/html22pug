@@ -1,0 +1,402 @@
+#run-details-page.ui-g
+  .ui-g-12
+    // card doesn't want to encompass all the height, so I disabled it for now
+    // <div class="card card-w-title">
+    div
+      h1 {{site.siteNumber}} | {{site.siteNumberRevision || 1}} | Run Details 
+      br
+      // <h3>Frozen Columns</h3>
+      // be cautions setting frozenWidth and width of individual columns. If they do not sum correctly then you may have very awkward shifts.
+      .ui-g-12
+        div(*ngif='!loading')
+          p-table([columns]='scrollableCols1' [frozencolumns]='frozenCols1' [value]='foulAndStormDrainage.items' [frozenvalue]='foulAndStormDrainage.items' [scrollable]='true' [frozenwidth]="frozenWidth+'px'")
+            ng-template(ptemplate='frozencolgroup')
+              colgroup
+                col(*ngfor='let col of frozenCols1' [ngstyle]='col.style')
+            // if this frozencolgroup is not presented then the colgroup gets used for frozen columns and also gets copied to scrollable part. So, if widths of columns vary you get a mess. Both templates should be specified to set all widths correctly. In such a case colgroup gets used only for scrollable columns.
+            ng-template(ptemplate='colgroup')
+              colgroup
+                col(*ngfor='let col of scrollableCols1' [ngstyle]='col.style')
+            // need both header and frozenheader to make the stuff work correctly
+            ng-template(ptemplate='frozenheader' let-columns='')
+              tr
+                th.subheader1(*ngfor='let col of frozenSubheaders' [colspan]='col.span')
+                  | {{col.title}}
+              // it looks that when we set all widths we don't need fixed layout
+              tr(style='table-layout-disabled: fixed!important;')
+                // beware, if some header title is too long to fit to given height then frozen and scrollable parts headers may misalign
+                th(*ngfor='let col of frozenCols1' style='width:80px; height: 42px !important;' [psortablecolumn]='col.field')
+                  | {{col.title}}
+                  p-sorticon(*ngif="col.field == 'order' || col.field == 'programmeID' || col.field == 'layerSimple'" [field]='col.field')
+            ng-template(ptemplate='header' let-columns='')
+              tr
+                th.subheader1(*ngfor='let col of scrollableSubheaders' [colspan]='col.span')
+                  | {{col.title}}
+              tr(style='table-layout-disabled: fixed!important;')
+                // beware, if some header title is too long to fit to given height then frozen and scrollable parts headers may misalign
+                th(*ngfor='let col of scrollableCols1' style='width:80px; height: 42px !important;')
+                  | {{col.title}}
+            ng-template(ptemplate='frozenbody' let-rowdata='')
+              tr
+                // TODO: try to refactor it with ng-templates. Just beware that templates are not macroses and probably still require params
+                td(peditablecolumn='' *ngfor='let col of frozenCols1' (click)='onNonEditableClick(rowData, col.isEditable)' [style.background]='getEditedCellBackground(rowData, col.field)')
+                  p-celleditor(*ngif='col.isEditable')
+                    ng-template(ptemplate='input')
+                      input(pinputtext='' type='text' [(ngmodel)]='rowData[col.field]' (ngmodelchange)='onModelChange($event, rowData, col.field)')
+                    ng-template(ptemplate='output')
+                      span {{rowData[col.field]}}
+                  span(*ngif='!col.isEditable')
+                    | {{rowData[col.field]}}
+            ng-template(ptemplate='body' let-rowdata='' let-columns='columns')
+              tr
+                td(peditablecolumn='' (click)='onExtrasClick(rowData, siteRules.nametableAdminPipeDataStusb)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let generalExtra of rowData.siteRulesTablesData[siteRules.nametableAdminPipeDataStusb].siteGeneralExtras')
+                        label(*ngif='generalExtra && generalExtra.selectedProductCode')
+                          | {{generalExtra.selectedProductCode.label}}:
+                          | {{generalExtra.quantity}}
+                  // <label>{{rowData.productCode}} : {{rowData.description}} : x{{rowData.extraQuantity}} : {{rowData.unitOfMeasurement}}</label>
+                td
+                  span
+                    // I use accessor method here just for compiler to do typechecking. Because rowData by itself doesn't get any type cause it is coming from primeng
+                    | {{zone2.intrusion_of_pipe_into_DS_MH__l_m_r_.value(rowData)}}
+                    // {{z2d["Intrusion of Pipe"]["Intrusion of pipe into DS MH (m)"].calc(rowData)}}
+                td
+                  span
+                    | {{zone2.intrusion_of_pipe_into_US_MH__l_m_r_.value(rowData)}}
+                td
+                  span
+                    | {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_2D__l_m_r_.value(rowData)}}
+                td
+                  span
+                    | {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+                td
+                  span
+                    | {{zone2.measured2DLength.value(rowData)}}
+                td
+                  span
+                    | {{zone2.n_2D_Length_o_Measured_length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+                td
+                  span
+                    | {{zone2.n_3D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_3D.value(rowData)}}
+                td
+                  span
+                    | {{zone2.n_3D_Length_o_Co_d_ordinated_Length__d__outside_to_outside_3D.value(rowData)}}
+                td
+                  span
+                    | {{zone2.measured3DLength.value(rowData)}}
+                td
+                  span
+                    | {{zone2.n_3D_Length_o_Measured_length__d__outside_to_outside_3D.value(rowData)}}
+                td(peditablecolumn='' (click)='onExtrasClick(rowData, siteRules.nametableAdminPipeDataStraightLengths)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let generalExtra of rowData.siteRulesTablesData[siteRules.nametableAdminPipeDataStraightLengths].siteGeneralExtras')
+                        label(*ngif='generalExtra && generalExtra.selectedProductCode')
+                          | {{generalExtra.selectedProductCode.label}}:
+                          | {{generalExtra.quantity}}
+                td
+                  span
+                    | {{rowData.trafficked}}
+                td
+                  span
+                    | {{zone2.startOfDownstream.value(rowData)}}
+                td
+                  span
+                    | {{zone2.startOfUpstream.value(rowData)}}
+                td
+                  p(*ngfor='let surround of rowData.surrounds')
+                    | {{surround.ref}}:{{surround.surroundType}}
+                td
+                  span
+                    | {{zone2.pipe_Surround_o_Length_centre_to_centre_s_m.value(rowData)}}
+                td
+                  span
+                    | {{zone2.pipe_Surround_o_Length_outside_to_outside_s_m.value(rowData)}}
+                td
+                  p(*ngfor='let surround of rowData.surroundsQuantity')
+                    | {{surround}} m3
+                  //
+                    <span>
+                    {{zone2.pipe_Surround_o_Quantity_and_unit.value(rowData)}}
+                    </span>
+                td
+                  p(*ngfor='let backfill of rowData.backfills')
+                    | {{backfill}}
+                td
+                  span
+                    | {{zone2.pipe_Backfill_o_Length_centre_to_centre_s_m.value(rowData)}}
+                td
+                  span
+                    | {{zone2.pipe_Surround_o_Length_outside_to_outside_s_m.value(rowData)}}
+                td
+                  p(*ngfor='let backfill of rowData.backfillsQuantity')
+                    | {{backfill}} m3
+                td
+                  span
+                    | {{zone2.bends_o_15.value(rowData)}}
+                td
+                  span
+                    | {{zone2.bends_o_30.value(rowData)}}
+                td
+                  span
+                    | {{zone2.bends_o_45.value(rowData)}}
+                td
+                  span
+                    | {{zone2.bends_o_90.value(rowData)}}
+                td(peditablecolumn='' (click)="onClickProduct(rowData, 'Bends')")
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor="let product of rowData['Bends']")
+                        label
+                          | {{product.productCode}}
+                          span(*ngif='product.quantity')  x {{product.quantity}}
+                          span(*ngif='product.siteGeneralExtras && product.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of product.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                // TODO: ....
+                td(peditablecolumn='' (click)="onClickProduct(rowData, 'Oblique-Junctions')")
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor="let product of rowData['Oblique-Junctions']")
+                        label
+                          | {{product.productCode}}
+                          span(*ngif='product.quantity')  x {{product.quantity}}
+                          span(*ngif='product.siteGeneralExtras && product.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of product.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)="onClickProduct(rowData, 'Square Junction')")
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor="let product of rowData['Square Junction']")
+                        label
+                          | {{product.productCode}}
+                          span(*ngif='product.quantity')  x {{product.quantity}}
+                          span(*ngif='product.siteGeneralExtras && product.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of product.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)="onClickProduct(rowData, 'Rockers')")
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor="let product of rowData['Rockers']")
+                        label
+                          | {{product.productCode}}
+                          span(*ngif='product.quantity')  x {{product.quantity}}
+                          span(*ngif='product.siteGeneralExtras && product.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of product.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td
+                  p(*ngfor='let level of rowData.topSurfaceLevelsParsed')
+                    | {{level}}
+                td
+                  span
+                    | {{zone2.trench_depth_categories_o_Average_Trench_Depth_Categories__d__measured_centre__d__centre_2D.value(rowData)}}
+                td
+                  span
+                    | {{zone2.trench_depth_categories_o_Average_Trench_Depth_Categories__d__measured_outside__d__outside_2D.value(rowData)}}
+                td
+                  p(*ngfor='let range of rowData.trenchLengthByRangesS')
+                    | {{range}}
+                td(peditablecolumn='' (click)='onRowSelectRunType(rowData)')
+                  p-celleditor(*ngif='rowData.siteRulesRunType')
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let generalExtra of rowData.siteRulesRunType.siteGeneralExtras')
+                        label(*ngif='generalExtra && generalExtra.selectedProductCode')
+                          | {{generalExtra.selectedProductCode.label}}:
+                          | {{generalExtra.quantity}}
+                // TODO: ....
+                // TODO: refactor this monsterous copypasts with pug, see how to integrate it here: https://medium.com/@levz0r/angular-cli-gulp-versioning-your-application-made-easy-d72a5f55b083
+                td(peditablecolumn='' (click)='onClickAncillary(rowData, EAncillaryTypes.Gully)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let ancillary of rowData.Gully')
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)="onClickAncillary(rowData, EAncillaryTypes['Linear Channel'])")
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor="let ancillary of rowData['Linear Channel']")
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)="onClickAncillary(rowData, EAncillaryTypes['Popups / Rest'])")
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor="let ancillary of rowData['Popups / Rest']")
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)='onClickAncillary(rowData, EAncillaryTypes.Tanks)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let ancillary of rowData.Tanks')
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)='onClickAncillary(rowData, EAncillaryTypes.Res)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let ancillary of rowData.Res')
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)='onClickAncillary(rowData, EAncillaryTypes.Headwalls)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let ancillary of rowData.Headwalls')
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)='onClickAncillary(rowData, EAncillaryTypes.Backdrop)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let ancillary of rowData.Backdrop')
+                        label
+                          | {{ancillary.code}}
+                          span(*ngif='ancillary.quantity')  x {{ancillary.quantity}}
+                          span(*ngif='ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length')
+                            span  Extra:
+                            span(*ngfor='let generalExtra of ancillary.siteGeneralExtras')
+                              br
+                              span(*ngif='generalExtra  && generalExtra.selectedProductCode')
+                                | {{generalExtra.selectedProductCode.label}}:
+                                // {{generalExtra.selectedProductCode.label}}:
+                                | {{generalExtra.quantity}}
+                td(peditablecolumn='' (click)='onGeneralExtrasClick(rowData)')
+                  p-celleditor
+                    ng-template(ptemplate='output')
+                      p(*ngfor='let generalExtra of rowData.extrasOnlyGeneral')
+                        label(*ngif='generalExtra && generalExtra.selectedProductCode')
+                          | {{generalExtra.selectedProductCode.label}}
+                          | : {{generalExtra.quantity}}
+                // TODO: ....
+                td
+                  span
+                    | {{zone2.buckets_o_Trench_width_s__bucket_size.value(rowData)}}
+                td
+                  span
+                    | {{zone2.buckets_o_Pipe_Bedding_Bucket.value(rowData)}}
+                td(peditablecolumn='')
+                  p-celleditor
+                    ng-template(ptemplate='input')
+                      textarea(pinputtext='' [(ngmodel)]='rowData.additionalInput1' (ngmodelchange)="onModelChange($event, rowData, 'additionalInput1')")
+                    ng-template(ptemplate='output')
+                      span {{rowData.additionalInput1}}
+                td(peditablecolumn='')
+                  p-celleditor
+                    ng-template(ptemplate='input')
+                      textarea(pinputtext='' [(ngmodel)]='rowData.additionalInput2' (ngmodelchange)="onModelChange($event, rowData, 'additionalInput2')")
+                    ng-template(ptemplate='output')
+                      span {{rowData.additionalInput2}}
+                td(peditablecolumn='')
+                  p-celleditor
+                    ng-template(ptemplate='input')
+                      textarea(pinputtext='' [(ngmodel)]='rowData.notes' (ngmodelchange)="onModelChange($event, rowData, 'notes')")
+                    ng-template(ptemplate='output')
+                      span {{rowData.notes}}
+      br
+      br
+      table(*ngif='isAcDebug()&&false')
+        tr(*ngfor='let rowData of foulAndStormDrainage.items')
+          td
+            span
+              | {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_2D__l_m_r_.value(rowData)}}
+          td
+            span
+              | {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+          td
+            span
+              | {{zone2.measured2DLength.value(rowData)}}
+          td
+            span
+              | {{zone2.n_2D_Length_o_Measured_length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+          td
+            span
+              | {{zone2.n_3D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_3D.value(rowData)}}
+          td
+            p-dropdown([options]='allTraffickedOptions' [(ngmodel)]='rowData.trafficked_o_All_Trafficked_q_' [style]="{'width':'150px'}" editable='true')
+      .ui-g-12
+        div(*ngfor='let row of validationMessages')
+          div(*ngfor='let msg of row' style='font-size:20px; color: red') {{msg}}
+          br
+      .ui-g-12
+        button.form-control(type='button' pbutton='' label='Back to Manhole Details' (click)='backToManholeDetails()')
+        button.form-control.pull-right(type='button' pbutton='' label='Proceed to Order' [disabled]='haveNotSavedChange()' (click)='proceedToOrder()')
+        button.form-control.pull-right(type='button' pbutton='' label='Save' [disabled]='!haveNotSavedChange()' (click)='saveAndProceed()')
+        button.form-control.pull-right(type='button' pbutton='' label='Exit' (click)='exitWithoutSaving()')
+      // need ngif here because without it angular fails to draw the diagram
+      .ui-g-12(*ngif='diagramConfig')
+        div
+          div(*ngfor='let msg of diagramMessages' style='font-size:20px; color: red') {{msg}}
+        // Use this when we need multiple diagrams: <div *ngFor="let cfg of configs">
+        diagram([config]='diagramConfig')

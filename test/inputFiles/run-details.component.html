@@ -1,0 +1,727 @@
+﻿<div id="run-details-page" class="ui-g">
+    <div class="ui-g-12">
+        <!--card doesn't want to encompass all the height, so I disabled it for now-->
+        <!--<div class="card card-w-title">-->
+        <div class="">
+
+            <h1>{{site.siteNumber}} | {{site.siteNumberRevision || 1}} | Run Details </h1>
+            <br>
+
+            <!--<h3>Frozen Columns</h3>-->
+            <!--be cautions setting frozenWidth and width of individual columns. If they do not sum correctly then you may have very awkward shifts.-->
+            <div class="ui-g-12">
+                <div *ngIf='!loading'>
+                    <p-table [columns]="scrollableCols1" [frozenColumns]="frozenCols1"
+                        [value]="foulAndStormDrainage.items" [frozenValue]="foulAndStormDrainage.items"
+                        [scrollable]="true" [frozenWidth]="frozenWidth+'px'">
+
+                        <ng-template pTemplate="frozencolgroup">
+                            <colgroup>
+                                <col *ngFor="let col of frozenCols1" [ngStyle]="col.style">
+                            </colgroup>
+                        </ng-template>
+                        <!--if this frozencolgroup is not presented then the colgroup gets used for frozen columns and also gets copied to scrollable part. So, if widths of columns vary you get a mess. Both templates should be specified to set all widths correctly. In such a case colgroup gets used only for scrollable columns.  -->
+                        <ng-template pTemplate="colgroup">
+                            <colgroup>
+                                <col *ngFor="let col of scrollableCols1" [ngStyle]="col.style">
+
+                            </colgroup>
+                        </ng-template>
+                        <!--need both header and frozenheader to make the stuff work correctly-->
+                        <ng-template pTemplate="frozenheader" let-columns>
+                            <tr>
+
+                                <th *ngFor="let col of frozenSubheaders" [colSpan]="col.span" class="subheader1">
+                                    {{col.title}}
+
+                                </th>
+                            </tr>
+                            <!--it looks that when we set all widths we don't need fixed layout-->
+                            <tr style="table-layout-disabled: fixed!important;">
+                                <!--beware, if some header title is too long to fit to given height then frozen and scrollable parts headers may misalign-->
+                                <th *ngFor="let col of frozenCols1" style="width:80px; height: 42px !important;"
+                                    [pSortableColumn]="col.field">
+                                    {{col.title}}
+                                    <p-sortIcon
+                                        *ngIf="col.field == 'order' || col.field == 'programmeID' || col.field == 'layerSimple'"
+                                        [field]="col.field"></p-sortIcon>
+                                </th>
+                            </tr>
+                          
+
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+
+                                <th *ngFor="let col of scrollableSubheaders" [colSpan]="col.span" class="subheader1">
+                                    {{col.title}}
+                                </th>
+                            </tr>
+                            <tr style="table-layout-disabled: fixed!important;">
+                                <!--beware, if some header title is too long to fit to given height then frozen and scrollable parts headers may misalign-->
+                                <th *ngFor="let col of scrollableCols1" style="width:80px; height: 42px !important;">
+                                    {{col.title}}
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="frozenbody" let-rowData>
+                            <tr>
+                                <!--TODO: try to refactor it with ng-templates. Just beware that templates are not macroses and probably still require params-->
+                                <td pEditableColumn *ngFor="let col of frozenCols1"
+                                    (click)="onNonEditableClick(rowData, col.isEditable)"
+                                    [style.background]="getEditedCellBackground(rowData, col.field)">
+                                    <p-cellEditor *ngIf="col.isEditable">
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="rowData[col.field]"
+                                                (ngModelChange)="onModelChange($event, rowData, col.field)">
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            <span>{{rowData[col.field]}}</span>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                    <span *ngIf="!col.isEditable">
+                                        {{rowData[col.field]}}
+                                    </span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr>
+                      
+                                <td pEditableColumn
+                                    (click)="onExtrasClick(rowData, siteRules.nametableAdminPipeDataStusb)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p
+                                                *ngFor="let generalExtra of rowData.siteRulesTablesData[siteRules.nametableAdminPipeDataStusb].siteGeneralExtras">
+                                                <label *ngIf="generalExtra && generalExtra.selectedProductCode">
+                                                    {{generalExtra.selectedProductCode.label}}:
+                                                    {{generalExtra.quantity}}
+                                                </label>
+                                            </p>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                    <!--<label>{{rowData.productCode}} : {{rowData.description}} : x{{rowData.extraQuantity}} : {{rowData.unitOfMeasurement}}</label>-->
+                                </td>
+                                <td>
+                                    <span>
+                                        <!--I use accessor method here just for compiler to do typechecking. Because rowData by itself doesn't get any type cause it is coming from primeng-->
+                                        {{zone2.intrusion_of_pipe_into_DS_MH__l_m_r_.value(rowData)}}
+                                        <!--{{z2d["Intrusion of Pipe"]["Intrusion of pipe into DS MH (m)"].calc(rowData)}}-->
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.intrusion_of_pipe_into_US_MH__l_m_r_.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_2D__l_m_r_.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.measured2DLength.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.n_2D_Length_o_Measured_length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.n_3D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_3D.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.n_3D_Length_o_Co_d_ordinated_Length__d__outside_to_outside_3D.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.measured3DLength.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.n_3D_Length_o_Measured_length__d__outside_to_outside_3D.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td pEditableColumn
+                                    (click)="onExtrasClick(rowData, siteRules.nametableAdminPipeDataStraightLengths)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p
+                                                *ngFor="let generalExtra of rowData.siteRulesTablesData[siteRules.nametableAdminPipeDataStraightLengths].siteGeneralExtras">
+                                                <label *ngIf="generalExtra && generalExtra.selectedProductCode">
+                                                    {{generalExtra.selectedProductCode.label}}:
+                                                    {{generalExtra.quantity}}
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{rowData.trafficked}}
+                                    </span>
+                                  
+
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.startOfDownstream.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.startOfUpstream.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <p *ngFor="let surround of rowData.surrounds">
+                                        {{surround.ref}}:{{surround.surroundType}}
+                                    </p>
+                            
+
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.pipe_Surround_o_Length_centre_to_centre_s_m.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.pipe_Surround_o_Length_outside_to_outside_s_m.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <p *ngFor="let surround of rowData.surroundsQuantity">
+                                        {{surround}} m3
+                                    </p>
+                                    <!-- <span>
+                                        {{zone2.pipe_Surround_o_Quantity_and_unit.value(rowData)}}
+                                    </span> -->
+                                </td>
+
+                                <td>
+                                    <p *ngFor="let backfill of rowData.backfills">
+                                        {{backfill}}
+                                    </p>
+                                 
+
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.pipe_Backfill_o_Length_centre_to_centre_s_m.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.pipe_Surround_o_Length_outside_to_outside_s_m.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <p *ngFor="let backfill of rowData.backfillsQuantity">
+                                        {{backfill}} m3
+                                    </p>
+                   
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.bends_o_15.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.bends_o_30.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.bends_o_45.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.bends_o_90.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td pEditableColumn (click)="onClickProduct(rowData, 'Bends')">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let product of rowData['Bends']">
+                                                <label>
+                                                    {{product.productCode}}
+                                                    <span *ngIf="product.quantity"> x {{product.quantity}}</span>
+                                                    <span
+                                                        *ngIf="product.siteGeneralExtras && product.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of product.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <!--TODO: ....-->
+                          
+                                <td pEditableColumn (click)="onClickProduct(rowData, 'Oblique-Junctions')">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let product of rowData['Oblique-Junctions']">
+                                                <label>
+                                                    {{product.productCode}}
+                                                    <span *ngIf="product.quantity"> x {{product.quantity}}</span>
+                                                    <span
+                                                        *ngIf="product.siteGeneralExtras && product.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of product.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn (click)="onClickProduct(rowData, 'Square Junction')">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let product of rowData['Square Junction']">
+                                                <label>
+                                                    {{product.productCode}}
+                                                    <span *ngIf="product.quantity"> x {{product.quantity}}</span>
+                                                    <span
+                                                        *ngIf="product.siteGeneralExtras && product.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of product.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn (click)="onClickProduct(rowData, 'Rockers')">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let product of rowData['Rockers']">
+                                                <label>
+                                                    {{product.productCode}}
+                                                    <span *ngIf="product.quantity"> x {{product.quantity}}</span>
+                                                    <span
+                                                        *ngIf="product.siteGeneralExtras && product.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of product.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+
+
+                               
+                                <td>
+                                    <p *ngFor="let level of rowData.topSurfaceLevelsParsed">
+                                        {{level}}
+                                    </p>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.trench_depth_categories_o_Average_Trench_Depth_Categories__d__measured_centre__d__centre_2D.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.trench_depth_categories_o_Average_Trench_Depth_Categories__d__measured_outside__d__outside_2D.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <p *ngFor="let range of rowData.trenchLengthByRangesS">
+                                        {{range}}
+                                    </p>
+                                
+                                </td>
+                                <td pEditableColumn (click)="onRowSelectRunType(rowData)">
+                                    <p-cellEditor *ngIf="rowData.siteRulesRunType">
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let generalExtra of rowData.siteRulesRunType.siteGeneralExtras">
+                                                <label *ngIf="generalExtra && generalExtra.selectedProductCode">
+                                                    {{generalExtra.selectedProductCode.label}}:
+                                                    {{generalExtra.quantity}}
+                                                </label>
+                                            </p>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <!--TODO: ....-->
+                                <!-- TODO: refactor this monsterous copypasts with pug, see how to integrate it here: https://medium.com/@levz0r/angular-cli-gulp-versioning-your-application-made-easy-d72a5f55b083 -->
+                                <td pEditableColumn (click)="onClickAncillary(rowData, EAncillaryTypes.Gully)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData.Gully">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+
+                                <td pEditableColumn
+                                    (click)="onClickAncillary(rowData, EAncillaryTypes['Linear Channel'])">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData['Linear Channel']">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn
+                                    (click)="onClickAncillary(rowData, EAncillaryTypes['Popups / Rest'])">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData['Popups / Rest']">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn (click)="onClickAncillary(rowData, EAncillaryTypes.Tanks)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData.Tanks">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn (click)="onClickAncillary(rowData, EAncillaryTypes.Res)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData.Res">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn (click)="onClickAncillary(rowData, EAncillaryTypes.Headwalls)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData.Headwalls">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn (click)="onClickAncillary(rowData, EAncillaryTypes.Backdrop)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let ancillary of rowData.Backdrop">
+                                                <label>
+                                                    {{ancillary.code}}
+                                                    <span *ngIf="ancillary.quantity"> x {{ancillary.quantity}}</span>
+                                                    <span
+                                                        *ngIf="ancillary.siteGeneralExtras && ancillary.siteGeneralExtras.length">
+                                                        <span> Extra:</span>
+                                                        <span *ngFor="let generalExtra of ancillary.siteGeneralExtras">
+                                                            <br />
+                                                            <span
+                                                                *ngIf="generalExtra  && generalExtra.selectedProductCode">
+                                                                {{generalExtra.selectedProductCode.label}}:
+                                                                <!-- {{generalExtra.selectedProductCode.label}}: -->
+                                                                {{generalExtra.quantity}}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+
+                                <td pEditableColumn (click)="onGeneralExtrasClick(rowData)">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="output">
+                                            <p *ngFor="let generalExtra of rowData.extrasOnlyGeneral">
+                                                <label
+                                                    *ngIf="generalExtra && generalExtra.selectedProductCode">{{generalExtra.selectedProductCode.label}}
+                                                    : {{generalExtra.quantity}}
+                                                </label>
+                                            </p>
+
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <!--TODO: ....-->
+                                <td>
+                                    <span>
+                                        {{zone2.buckets_o_Trench_width_s__bucket_size.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>
+                                        {{zone2.buckets_o_Pipe_Bedding_Bucket.value(rowData)}}
+                                    </span>
+                                </td>
+                                <td pEditableColumn>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <textarea pInputText [(ngModel)]="rowData.additionalInput1"
+                                                (ngModelChange)="onModelChange($event, rowData, 'additionalInput1')">
+                                            </textarea>
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            <span>{{rowData.additionalInput1}}</span>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <textarea pInputText [(ngModel)]="rowData.additionalInput2"
+                                                (ngModelChange)="onModelChange($event, rowData, 'additionalInput2')">
+                                                </textarea>
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            <span>{{rowData.additionalInput2}}</span>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td pEditableColumn>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <textarea pInputText [(ngModel)]="rowData.notes"
+                                                (ngModelChange)="onModelChange($event, rowData, 'notes')">
+                                                    </textarea>
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            <span>{{rowData.notes}}</span>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+            <br />
+            <br />
+            <table *ngIf="isAcDebug()&&false">
+                <tr *ngFor="let rowData of foulAndStormDrainage.items">
+
+                    <td>
+                        <span>
+                            {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_2D__l_m_r_.value(rowData)}}
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            {{zone2.n_2D_Length_o_Co_d_ordinated_Length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            {{zone2.measured2DLength.value(rowData)}}
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            {{zone2.n_2D_Length_o_Measured_length__d__outside_to_outside_2D__l_m_r_.value(rowData)}}
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            {{zone2.n_3D_Length_o_Co_d_ordinated_Length__d__Centre_to_centre_3D.value(rowData)}}
+                        </span>
+                    </td>
+                    <td>
+                        <p-dropdown [options]="allTraffickedOptions"
+                            [(ngModel)]="rowData.trafficked_o_All_Trafficked_q_" [style]="{'width':'150px'}"
+                            editable="true"></p-dropdown>
+                       
+                    </td>
+
+                </tr>
+            </table>
+            <div class="ui-g-12">
+              
+                <div *ngFor="let row of validationMessages">
+                    <div *ngFor="let msg of row" style="font-size:20px; color: red">{{msg}}</div>
+                    <br />
+                </div>
+
+            </div>
+            <div class="ui-g-12">
+              
+
+                <button class="form-control" type="button" pButton label="Back to Manhole Details"
+                    (click)="backToManholeDetails()"></button>
+                <button class="form-control pull-right" type="button" pButton label="Proceed to Order"
+                    [disabled]="haveNotSavedChange()" (click)="proceedToOrder()"></button>
+                <button class="form-control pull-right" type="button" pButton label="Save"
+                    [disabled]="!haveNotSavedChange()" (click)="saveAndProceed()"></button>
+
+                <button class="form-control pull-right" type="button" pButton label="Exit"
+                    (click)="exitWithoutSaving()"></button>
+
+            </div>
+            <!-- need ngif here because without it angular fails to draw the diagram -->
+            <div class="ui-g-12" *ngIf="diagramConfig">
+                <div>
+                    <div *ngFor="let msg of diagramMessages" style="font-size:20px; color: red">{{msg}}</div>
+                </div>
+
+                <!--Use this when we need multiple diagrams: <div *ngFor="let cfg of configs"> -->
+                <diagram [config]="diagramConfig"></diagram>
+               
+            </div>
+        </div>
+    </div>
+</div>

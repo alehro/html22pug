@@ -1,0 +1,29 @@
+doctype html
+.ui-g(style='padding-bottom: 10px')
+  .ui-g-12.ui-table
+    p-table([value]='args.products' [responsive]='true')
+      ng-template(pTemplate='header')
+        tr
+          th.table-widtch Product Code
+          th(style='width: 80px') Quantity
+          th Extras
+      ng-template(pTemplate='body' let-rowData)
+        tr(style='width: auto !important')
+          td
+            | {{rowData.Code || rowData.productCode}}
+          td(pEditableColumn)
+            p-cellEditor
+              ng-template(pTemplate='input')
+                input(pInputText type='text' [(ngModel)]='rowData.Quantity')
+              ng-template(ptemplate='output')
+                | {{rowData.Quantity}}
+          td((click)='onClickExtras(rowData, rowData.tabType||rowData.productType)')
+            span
+              span(*ngFor='let generalExtra of rowData.siteGeneralExtras')
+                span(*ngIf='generalExtra  && generalExtra.selectedProductCode')
+                  | {{generalExtra.selectedProductCode.label}}:
+                  | {{generalExtra.quantity}}
+p-footer
+  .ui-dialog-buttonpane.ui-helper-clearfix
+    //button(type='button' pButton icon='fa fa-close' (click)='onDialogCancel()' label='Cancel')
+    //button(type='button' pButton icon='fa fa-check' (click)='onDialogOk()' label='Save')

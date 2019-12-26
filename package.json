@@ -5,10 +5,26 @@
   "engines": {
     "node": ">= 10.13 <11"
   },
+  "watch": {
+    "prebuild": {
+      "patterns": [
+        "test"
+      ],
+      "extensions": "pug",
+      "runOnChangeOnly": false
+    }
+  },
   "devDependencies": {
     "@types/jest": "^24.0.0",
     "@types/node": "^10.14.0",
+    "gulp": "^4.0.2",
+    "gulp-changed": "^4.0.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-print": "5.0.2",
+    "gulp-pug": "^4.0.1",
     "jest": "~24.8.0",
+    "npm-watch": "^0.6.0",
+    "parallelshell": "3.0.1",
     "prettier": "~1.17.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
@@ -21,10 +37,11 @@
   "scripts": {
     "main": "npm run build & node build/src/main.js",
     "clean": "rimraf coverage build tmp",
-    "build": "tsc -p tsconfig.release.json",
-    "build:watch": "tsc -w -p tsconfig.release.json",
+    "build": "parallelshell \"tsc -p tsconfig.release.json\" npm-watch",
+    "build:watch": "parallelshell \"tsc -w -p tsconfig.release.json\" npm-watch",
     "lint": "tslint -t stylish --project \"tsconfig.json\"",
     "test": "jest",
+    "prebuild": "gulp pug_changed",
     "test:watch": "jest --watch"
   },
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",

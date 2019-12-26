@@ -7,7 +7,12 @@ import { Html2Pug } from './Html2Pug';
 
 let test1=()=>{
     //new Html2Pug().convertFile("C:\\work\\my\\Pug\\html22pug\\test\\inputFiles\\customers.component.html", "C:\\work\\my\\Pug\\html22pug\\test\\inputFiles\\customers.component.pug");
-    new Html2Pug().convertFile("C:\\work\\my\\Pug\\html22pug\\test\\inputFiles\\index1.html", "C:\\work\\my\\Pug\\html22pug\\test\\outputFiles\\index1.pug");
+
+    // new Html2Pug().convertFile("C:\\work\\my\\Pug\\html22pug\\test\\inputFiles\\index1.html", "C:\\work\\my\\Pug\\html22pug\\test\\outputFiles\\index1.pug");
+
+    //new Html2Pug().convertFile("C:\\work\\my\\Pug\\html22pug\\test\\inputFiles\\header.component.html", "C:\\work\\my\\Pug\\html22pug\\test\\outputFiles\\header.component.pug");
+
+    new Html2Pug().convertFile("C:\\work\\my\\Pug\\html22pug\\test\\inputFiles\\app-table.component.html", "C:\\work\\my\\Pug\\html22pug\\test\\outputFiles\\app-table.component.pug");
 }
 
 let runJest=()=>{

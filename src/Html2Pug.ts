@@ -26,6 +26,24 @@ export class Html2Pug {
 
     return res;
   }
+  textNodeIsSibling(node: Node) {
+    if (node.parent) {
+      let chs = node.parent.children;
+      let id = chs.indexOf(node);
+      let previous = chs.slice(0, id);
+
+      if (previous.some(n => {
+        return n instanceof Element;
+      })) return true;
+    }
+    return false;
+
+  }
+  cleanNewLines(text: string){
+    let res = text.trim().replace("\n", "");
+    res = res.replace("\r", "");
+    return res;
+  }
   traverseDom(nodes: Node[], depth: number) {
     let indent = "";
     for (let i = 0; i < depth; i++) indent += "  ";
@@ -41,12 +59,24 @@ export class Html2Pug {
           //res += indent +"| " + node.data;
           if (node.parent && (node.parent as Element).name == "style") {
             res += ".\n" + indent + node.data.trim();// pug line continuation
-          } else {
-            res += " " + node.data.trim();
+          } else {    
+            let text = this.cleanNewLines(node.data.trim());        
+            if (this.textNodeIsSibling(node)) {
+              //just raw text in html              
+              res += "\n" + indent +"span "+ text;
+            }else{
+              res += " " + text;
+            }
           }
-        } else {
+        } else if (node.type == "comment") {
+          //remove new lines from multiline comments otherwise we have pug error: Unexpected token.
+          let comment = this.cleanNewLines(node.data.trim());
+          res += "\n" + indent + `<!--${comment}-->`;
+        } else if (node.type == "directive") {
           //res += "UNHANDLED ELEMENT TYPE. Please convert it manually."
           res += "\n" + indent + `<${node.data}/>`;
+        } else {
+          res += "UNHANDLED ELEMENT TYPE. Please convert it manually."
         }
       } else if (node instanceof Element) {
         res += "\n" + indent + this.convertElement(node);

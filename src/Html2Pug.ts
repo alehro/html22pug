@@ -45,7 +45,8 @@ export class Html2Pug {
             res += " " + node.data.trim();
           }
         } else {
-          res += "UNHANDLED ELEMENT TYPE. Please convert it manually."
+          //res += "UNHANDLED ELEMENT TYPE. Please convert it manually."
+          res += "\n" + indent + `<${node.data}/>`;
         }
       } else if (node instanceof Element) {
         res += "\n" + indent + this.convertElement(node);

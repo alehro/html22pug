@@ -11,8 +11,19 @@ describe('greeter function', () => {
       <span>Some text</span>
     </div>
     `
-    let res = new Html2Pug().convertString(html);
+    let res = Html2Pug.convertString(html);
     expect(res.indexOf('div')).toBe(0);
+    expect(res.indexOf('*ngIf="true"')).toBeGreaterThan(0);
+  });
+  it('converts decent html', () => {
+    let html = `
+    <div *ngIf="true" class="ui-g" style="padding-bottom: 10px">   
+      <span>Some text</span>
+    </div>
+    `
+    let res = Html2Pug.convertString(html);
+    expect(res.indexOf('div')).toBe(0);
+    expect(res.indexOf('*ngIf="true"')).toBeGreaterThan(0);
   });
 });
 // describe('greeter function', () => {

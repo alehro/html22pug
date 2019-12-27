@@ -1,0 +1,12 @@
+
+<ng-template #genderTemplate="" let-row="row" let-value="value">{{value}}</ng-template>
+<h1>Sum of all orders for all customers: {{totalTotals | number:'0.2-2'}}</h1>
+<h3>Males count: {{malesCount | number:'0.0'}}</h3>
+<h3>Females count: {{femalesCount | number:'0.0'}}</h3>
+<appc-table [options]="options"></appc-table>
+<ng-template #addressTemplate="" let-row="row">
+  <div style="padding-left:35px;">
+    <div><strong>Details</strong></div>
+    <div>{{row.address}}</div>
+  </div>
+</ng-template>

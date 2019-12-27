@@ -6,7 +6,7 @@ const changed = require('gulp-changed');
 
 var path = {
     jade: {
-        out: './test',
+        out: './test/outputFiles',
         src: ['./test/**/*.pug']
     }
 };
@@ -24,7 +24,7 @@ gulp.task('pug_changed', function () {
             let message = es.substr(0, detailsIndex);
             console.log(message +"The details go here but they does not relate to the pug error we need, so they are truncated. All the info we need is above.");
           })
-        .pipe(gulp.dest(path.jade.out))
+        .pipe(gulp.dest(path.jade.out));
 });
 
 gulp.task('test1', function (done) {

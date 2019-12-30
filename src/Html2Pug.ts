@@ -13,7 +13,7 @@ export class Html2Pug {
     return res;
   }
   convertElement(el: Element) {
-    let res = el.name;
+    let res = el.name; 
 
     if (Object.keys(el.attribs).length) {
       let all = _.map(el.attribs, (value, key) => {

@@ -1,10 +1,13 @@
 {
-  "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
-  "engines": {
-    "node": ">= 10.13 <11"
+  "name": "html22pug",
+  "version": "0.7.3",
+  "description": "Html to pug converter based on htmlparser2. It fixes issue html2pug doesn't want to fix. html2pug makes all attributes lower case which is critical thing for some frameworks, e.g. for Angular.",
+  "bin": {
+    "html22pug": "./build/src/main.js"
   },
+  "browserDependencies_doesnt_work": [
+    "node"
+  ],
   "watch": {
     "prebuild": {
       "patterns": [
@@ -17,6 +20,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.0",
     "@types/node": "^10.14.0",
+    "gulp": "^4.0.2",
     "gulp-changed": "^4.0.0",
     "gulp-newer": "^1.4.0",
     "gulp-print": "5.0.2",
@@ -43,17 +47,24 @@
     "prebuild": "gulp pug_changed",
     "test:watch": "jest --watch"
   },
-  "author": "Jakub Synowiec <github@jakubsynowiec.info>",
+  "author": "Alexander Khromov <github@jakubsynowiec.info>",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/alehro/html22pug.git"
+  },
+  "keywords": [
+    "convert",
+    "html",
+    "jade",
+    "pug"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "@types/underscore": "^1.9.4",
-    "commander": "^2.20.0",
     "domhandler": "^3.0.0",
-    "gulp": "^4.0.2",
-    "gulp-rename": "^2.0.0",
+    "glob": "^7.1.6",
     "htmlparser2": "^4.0.0",
     "tslib": "~1.9.3",
-    "through2": "^3.0.1",
     "underscore": "^1.9.1"
   }
 }
